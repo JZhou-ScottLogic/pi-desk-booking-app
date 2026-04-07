@@ -4,9 +4,9 @@
   "private": true,
   "description": "NFC desk booking reminder web app",
   "scripts": {
-    "start": "serve -l 8080 ."
+    "start": "node server.js"
   },
-  "devDependencies": {
-    "serve": "^14.2.4"
+  "dependencies": {
+    "express": "^4.21.2"
   }
 }

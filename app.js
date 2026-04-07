@@ -207,7 +207,8 @@ async function loadWeeklyBookings(icalUrl) {
   loadMessage.textContent = "Loading iCal data...";
 
   try {
-    const response = await fetch(icalUrl, { cache: "no-store" });
+    const proxiedUrl = `/api/ical?url=${encodeURIComponent(icalUrl)}`;
+    const response = await fetch(proxiedUrl, { cache: "no-store" });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
     const icsText = await response.text();
@@ -220,7 +221,7 @@ async function loadWeeklyBookings(icalUrl) {
     loadMessage.textContent = `Loaded ${events.length} booking(s) for this week.`;
   } catch (err) {
     renderBookings([]);
-    loadMessage.textContent = `Could not load bookings: ${err.message}. This iCal host may block CORS.`;
+    loadMessage.textContent = `Could not load bookings: ${err.message}.`;
   }
 }
 

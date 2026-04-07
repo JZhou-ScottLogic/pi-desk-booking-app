@@ -15,7 +15,7 @@ Mobile-friendly web app that scans your NFC card, reads the iCal URL from the ca
 
 - Web NFC requires **HTTPS** (or localhost)
 - Best support: **Android Chrome**
-- If iCal server blocks cross-origin requests, browser fetch may fail due to **CORS**
+- App includes a small local proxy endpoint (`/api/ical`) to avoid browser CORS blocks when fetching iCal URLs
 - If NFC is unavailable, use a deep link fallback with URL params (e.g. `?card=abc123`) to load cached card mappings
 - Built-in helper UI can generate/copy iPhone Shortcut URLs for you
 
@@ -38,4 +38,8 @@ Use the **Shortcuts** app:
 
 ## Run
 
-Open `index.html` on a secure origin (HTTPS / localhost), tap **Start NFC Scan** (Android Chrome), then tap your card.
+1. Install deps: `npm install`
+2. Start app: `npm start`
+3. Open the forwarded URL on HTTPS (Codespaces) or `http://localhost:8080`
+
+The app serves static files and a local iCal proxy at `/api/ical`.
