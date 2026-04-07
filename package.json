@@ -1,0 +1,12 @@
+{
+  "name": "desk-booking-reminder",
+  "version": "1.0.0",
+  "private": true,
+  "description": "NFC desk booking reminder web app",
+  "scripts": {
+    "start": "serve -l 8080 ."
+  },
+  "devDependencies": {
+    "serve": "^14.2.4"
+  }
+}
