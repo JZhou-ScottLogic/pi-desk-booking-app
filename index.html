@@ -10,7 +10,7 @@
     <main class="app">
       <header>
         <h1>Desk Booking Reminder</h1>
-        <p>Tap your NFC card to load this week's desk bookings from its iCal link.</p>
+        <p>Load this week’s desk bookings from your card-linked iCal feed.</p>
       </header>
 
       <section class="panel" aria-labelledby="scan-title">
@@ -21,17 +21,36 @@
         </div>
         <p id="scanSupport" class="muted"></p>
 
-        <label for="manualCardId">Manual fallback (no Web NFC):</label>
+        <label for="manualCardId">Fallback (iPhone/no Web NFC):</label>
         <div class="actions">
           <input id="manualCardId" type="text" placeholder="Card ID" />
           <button id="simulateBtn" type="button" class="secondary">Load cached card</button>
         </div>
+        <p class="muted">iPhone flow: use an iOS Shortcut NFC automation to open this app with <code>?card=YOUR_CARD_ID</code> (optionally <code>&ical=...</code> once to cache).</p>
 
         <p id="scanStatus" role="status" aria-live="polite"></p>
       </section>
 
+      <section class="panel" aria-labelledby="shortcut-title">
+        <h2 id="shortcut-title">2) Generate iPhone Shortcut URL</h2>
+        <label for="shortcutCardId">Card ID</label>
+        <input id="shortcutCardId" type="text" placeholder="e.g. work-card" />
+
+        <label for="shortcutIcalUrl">iCal URL (optional after first setup)</label>
+        <input id="shortcutIcalUrl" type="url" placeholder="https://.../calendar.ics" />
+
+        <div class="actions">
+          <button id="generateShortcutBtn" type="button">Generate URL</button>
+          <button id="copyShortcutBtn" type="button" class="secondary">Copy URL</button>
+        </div>
+
+        <label for="shortcutUrlOutput">Shortcut URL to use in iOS Shortcuts</label>
+        <input id="shortcutUrlOutput" type="text" readonly />
+        <p id="shortcutStatus" class="muted"></p>
+      </section>
+
       <section class="panel" aria-labelledby="results-title">
-        <h2 id="results-title">2) This week's bookings</h2>
+        <h2 id="results-title">3) This week's bookings</h2>
         <p><strong>Last scanned card:</strong> <span id="lastCard">None</span></p>
         <p><strong>Detected iCal URL:</strong> <a id="icalLink" href="#" target="_blank" rel="noopener noreferrer" class="hidden"></a><span id="noIcal" class="muted"> None</span></p>
         <p id="loadMessage" class="muted">Scan a card to load bookings.</p>
@@ -40,7 +59,7 @@
       </section>
 
       <section class="panel" aria-labelledby="saved-title">
-        <h2 id="saved-title">Cached cards</h2>
+        <h2 id="saved-title">4) Cached cards</h2>
         <p class="muted">If a card provides an iCal URL once, it is cached locally for future scans.</p>
         <ul id="savedCards"></ul>
       </section>

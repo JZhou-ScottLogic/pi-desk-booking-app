@@ -12,6 +12,12 @@ const noIcal = document.getElementById("noIcal");
 const loadMessage = document.getElementById("loadMessage");
 const bookingList = document.getElementById("bookingList");
 const savedCards = document.getElementById("savedCards");
+const shortcutCardId = document.getElementById("shortcutCardId");
+const shortcutIcalUrl = document.getElementById("shortcutIcalUrl");
+const generateShortcutBtn = document.getElementById("generateShortcutBtn");
+const copyShortcutBtn = document.getElementById("copyShortcutBtn");
+const shortcutUrlOutput = document.getElementById("shortcutUrlOutput");
+const shortcutStatus = document.getElementById("shortcutStatus");
 
 let abortController = null;
 
@@ -251,6 +257,8 @@ async function processCard(cardId, icalUrlFromCard = "") {
   if (!id) return;
 
   lastCard.textContent = id;
+  manualCardId.value = id;
+  if (shortcutCardId) shortcutCardId.value = id;
 
   const cache = loadCache();
   let icalUrl = icalUrlFromCard;
@@ -273,6 +281,24 @@ async function processCard(cardId, icalUrlFromCard = "") {
     return;
   }
 
+  await loadWeeklyBookings(icalUrl);
+}
+
+async function bootstrapFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const cardId = (params.get("card") || "").trim();
+  const icalUrl = (params.get("ical") || "").trim();
+
+  if (!cardId && !icalUrl) return;
+
+  if (cardId) {
+    manualCardId.value = cardId;
+    await processCard(cardId, icalUrl);
+    return;
+  }
+
+  // Supports direct `?ical=` links even without a card ID.
+  setIcalDisplay(icalUrl);
   await loadWeeklyBookings(icalUrl);
 }
 
@@ -309,9 +335,61 @@ function stopScan() {
   scanStatus.textContent = "NFC scan stopped.";
 }
 
+function buildShortcutUrl(cardId, icalUrl) {
+  const base = `${window.location.origin}${window.location.pathname}`;
+  const url = new URL(base);
+  url.searchParams.set("card", cardId);
+
+  if (icalUrl) {
+    url.searchParams.set("ical", icalUrl);
+  }
+
+  return url.toString();
+}
+
+function generateShortcutUrl() {
+  const cardId = (shortcutCardId?.value || "").trim();
+  const ical = (shortcutIcalUrl?.value || "").trim();
+
+  if (!cardId) {
+    shortcutStatus.textContent = "Enter a card ID first.";
+    return;
+  }
+
+  const url = buildShortcutUrl(cardId, ical);
+  shortcutUrlOutput.value = url;
+  shortcutStatus.textContent = "URL generated. Add this URL to your iOS Shortcut action.";
+}
+
+async function copyShortcutUrl() {
+  const text = (shortcutUrlOutput?.value || "").trim();
+  if (!text) {
+    shortcutStatus.textContent = "Generate a URL first.";
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(text);
+    shortcutStatus.textContent = "Copied to clipboard.";
+  } catch {
+    shortcutUrlOutput.select();
+    document.execCommand("copy");
+    shortcutStatus.textContent = "Copied (fallback).";
+  }
+}
+
 simulateBtn.addEventListener("click", async () => {
   await processCard(manualCardId.value, "");
 });
+
+generateShortcutBtn?.addEventListener("click", generateShortcutUrl);
+copyShortcutBtn?.addEventListener("click", copyShortcutUrl);
+
+if (manualCardId && shortcutCardId) {
+  manualCardId.addEventListener("input", () => {
+    shortcutCardId.value = manualCardId.value;
+  });
+}
 
 startScanBtn.addEventListener("click", startScan);
 stopScanBtn.addEventListener("click", stopScan);
@@ -319,8 +397,11 @@ stopScanBtn.addEventListener("click", stopScan);
 if ("NDEFReader" in window) {
   scanSupport.textContent = "Web NFC is available. Use HTTPS on Android Chrome.";
 } else {
-  scanSupport.textContent = "Web NFC is unavailable in this browser. You can only load cached cards manually.";
+  scanSupport.textContent = "Web NFC is unavailable in this browser. On iPhone, use an NFC Shortcut that opens this page with ?card=...";
   startScanBtn.disabled = true;
 }
 
 renderCacheList();
+bootstrapFromUrl().catch((err) => {
+  loadMessage.textContent = `Could not load from URL parameters: ${err.message}`;
+});

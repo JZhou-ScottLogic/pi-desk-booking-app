@@ -16,7 +16,8 @@ Mobile-friendly web app that scans your NFC card, reads the iCal URL from the ca
 - Web NFC requires **HTTPS** (or localhost)
 - Best support: **Android Chrome**
 - If iCal server blocks cross-origin requests, browser fetch may fail due to **CORS**
-- If NFC is unavailable, manual fallback can only load previously cached card IDs
+- If NFC is unavailable, use a deep link fallback with URL params (e.g. `?card=abc123`) to load cached card mappings
+- Built-in helper UI can generate/copy iPhone Shortcut URLs for you
 
 ## Files
 
@@ -24,6 +25,17 @@ Mobile-friendly web app that scans your NFC card, reads the iCal URL from the ca
 - `styles.css` – responsive styles
 - `app.js` – NFC + iCal parsing + weekly booking rendering
 
+## iPhone fallback (no Web NFC in browser)
+
+Use the **Shortcuts** app:
+
+1. Create a Personal Automation triggered by NFC tag/card tap
+2. Add action: **Open URLs**
+3. Use your app URL with params:
+   - `https://<your-app>.app.github.dev/?card=YOUR_CARD_ID`
+   - optional first-time bootstrap: `https://<your-app>.app.github.dev/?card=YOUR_CARD_ID&ical=https%3A%2F%2F...`
+4. First run with `&ical=...` caches it in localStorage; after that `?card=...` is enough
+
 ## Run
 
-Open `index.html` on a secure origin (HTTPS / localhost), tap **Start NFC Scan**, then tap your card.
+Open `index.html` on a secure origin (HTTPS / localhost), tap **Start NFC Scan** (Android Chrome), then tap your card.
