@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Desk Booking Reminder</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header>
+        <h1>Desk Booking Reminder</h1>
+        <p>Tap your NFC card to load this week's desk bookings from its iCal link.</p>
+      </header>
+
+      <section class="panel" aria-labelledby="scan-title">
+        <h2 id="scan-title">1) Scan card</h2>
+        <div class="actions">
+          <button id="startScanBtn" type="button">Start NFC Scan</button>
+          <button id="stopScanBtn" type="button" class="secondary" disabled>Stop Scan</button>
+        </div>
+        <p id="scanSupport" class="muted"></p>
+
+        <label for="manualCardId">Manual fallback (no Web NFC):</label>
+        <div class="actions">
+          <input id="manualCardId" type="text" placeholder="Card ID" />
+          <button id="simulateBtn" type="button" class="secondary">Load cached card</button>
+        </div>
+
+        <p id="scanStatus" role="status" aria-live="polite"></p>
+      </section>
+
+      <section class="panel" aria-labelledby="results-title">
+        <h2 id="results-title">2) This week's bookings</h2>
+        <p><strong>Last scanned card:</strong> <span id="lastCard">None</span></p>
+        <p><strong>Detected iCal URL:</strong> <a id="icalLink" href="#" target="_blank" rel="noopener noreferrer" class="hidden"></a><span id="noIcal" class="muted"> None</span></p>
+        <p id="loadMessage" class="muted">Scan a card to load bookings.</p>
+
+        <ul id="bookingList"></ul>
+      </section>
+
+      <section class="panel" aria-labelledby="saved-title">
+        <h2 id="saved-title">Cached cards</h2>
+        <p class="muted">If a card provides an iCal URL once, it is cached locally for future scans.</p>
+        <ul id="savedCards"></ul>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
